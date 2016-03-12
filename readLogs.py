@@ -1,5 +1,5 @@
 import os
-import Tkinter
+import time
 # top = Tkinter.Tk()
 # # Code to add widgets will go here...
 # top.mainloop()
@@ -9,8 +9,8 @@ from Tkinter import *
 # Getting the distant from the transmitter and emitter base on the time the signal takes to reach the dest.
 def getDistance (sendTime, receiveTime) :
 	sendingTime = (int(receiveTime) - int(sendTime)) #nanosecond
-	speedOfLight = 299792458; #m/s
-	distance = sendingTime * speedOfLight / 1000000000;
+	speedOfLight = 300000000; #m/s 299792458
+	distance = sendingTime * speedOfLight / 100000000;
 	return distance
 
 # Working out which emitter sending the signal.
@@ -21,11 +21,18 @@ def identifyEmitterAndDistance (signalMessage, receiveTime):
 	return (emitterCode, distance)
 
 # Create circle using provided centre point coordinate and diameter.
-def drawCircleWithCentrePoint (x, y, r, canvas, outlineColor):
-	return canvas.create_oval(x - r, y - r, x + r, y + r, outline = outlineColor)
+def drawCircleWithCentrePoint (x, y, r, canvas, outlineColor, tags):
+	return canvas.create_oval(x - r, y - r, x + r, y + r, outline = outlineColor, tags = tags)
+
+# Write Log file 
+def writeLogFile (url, fileName):
+	os.system("cd " + url)# url = "/Users/baolongngo/Documents/UoP/FinalYear/Project"
+	f = open(fileName,"w")# filename = "logs.txt"
+	currentTime = int(time.time() * 1000000000)#nano second
+	f.write(str(currentTime) + " " + str(currentTime + 6)) 
 
 # Read Log file
-def readLogFile(url, fileName):
+def readLogFile(url, fileName, canvas):
 	os.system("cd " + url)# url = "/Users/baolongngo/Documents/UoP/FinalYear/Project"
 	f = open(fileName,"r")# filename = "logs.txt"
 	readf = f.readlines()
@@ -33,8 +40,16 @@ def readLogFile(url, fileName):
 		distance = 0
 		times = line.split()
 		emitterCodeNdistance = identifyEmitterAndDistance(times[0], times[1])
-		print emitterCodeNdistance[0]
 		print emitterCodeNdistance[1]
+		if emitterCodeNdistance[0] == "1":
+			canvas.delete(canvas.find_withtag("one")[0])
+			drawCircleWithCentrePoint(400, 200, emitterCodeNdistance[1], canvas, "red", "one")
+		elif emitterCodeNdistance[0] == "2":
+			canvas.delete(canvas.find_withtag("two")[0])
+			drawCircleWithCentrePoint(200, 400, emitterCodeNdistance[1], canvas, "green", "two")
+		else:
+			canvas.delete(canvas.find_withtag("three")[0])
+			drawCircleWithCentrePoint(200, 200, emitterCodeNdistance[1], canvas, "blue", "three")
 	#close file
 	if f.closed == "False":
 	    f.close()
@@ -45,15 +60,14 @@ def main():
 	w = Canvas(master, width=600, height=600)
 	w.pack()
 
-	# w.create_line(0, 0, 200, 100)
-	# w.create_line(0, 100, 200, 0, fill="red", dash=(4, 4))
-
 	w.create_rectangle(200, 200, 400, 400, outline="black")
-	# w.create_oval(10, 50, 50, 80, outline="green")
-	# drawCircleWithCentrePoint(0, 0, 50, w)
-	drawCircleWithCentrePoint(400, 200, 150, w, "red")
-	drawCircleWithCentrePoint(200, 400, 132, w, "green")
-	drawCircleWithCentrePoint(200, 200, 150, w, "blue")
+	emitter1 = drawCircleWithCentrePoint(400, 200, 170, w, "red", "one")
+	emitter2 = drawCircleWithCentrePoint(200, 400, 132, w, "green", "two")
+	emitter3 = drawCircleWithCentrePoint(200, 200, 150, w, "blue", "three")
+
+	readLogFile("/Users/baolongngo/Documents/UoP/FinalYear/Project", "logs.txt", w)
+
+
 	mainloop()
 
 main()
