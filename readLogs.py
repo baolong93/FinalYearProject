@@ -37,19 +37,20 @@ def readLogFile(url, fileName, canvas):
 	f = open(fileName,"r")# filename = "logs.txt"
 	readf = f.readlines()
 	for line in readf:
-		distance = 0
-		times = line.split()
-		emitterCodeNdistance = identifyEmitterAndDistance(times[0], times[1])
-		print emitterCodeNdistance[1]
-		if emitterCodeNdistance[0] == "1":
-			canvas.delete(canvas.find_withtag("one")[0])
-			drawCircleWithCentrePoint(400, 200, emitterCodeNdistance[1], canvas, "red", "one")
-		elif emitterCodeNdistance[0] == "2":
-			canvas.delete(canvas.find_withtag("two")[0])
-			drawCircleWithCentrePoint(200, 400, emitterCodeNdistance[1], canvas, "green", "two")
-		else:
-			canvas.delete(canvas.find_withtag("three")[0])
-			drawCircleWithCentrePoint(200, 200, emitterCodeNdistance[1], canvas, "blue", "three")
+		if len(line) > 1: 
+			distance = 0
+			times = line.split()
+			emitterCodeNdistance = identifyEmitterAndDistance(times[0], times[1])
+			print emitterCodeNdistance[1]
+			if emitterCodeNdistance[0] == "1":
+				canvas.delete(canvas.find_withtag("one")[0])
+				drawCircleWithCentrePoint(400, 200, emitterCodeNdistance[1], canvas, "red", "one")
+			elif emitterCodeNdistance[0] == "2":
+				canvas.delete(canvas.find_withtag("two")[0])
+				drawCircleWithCentrePoint(200, 400, emitterCodeNdistance[1], canvas, "green", "two")
+			else:
+				canvas.delete(canvas.find_withtag("three")[0])
+				drawCircleWithCentrePoint(200, 200, emitterCodeNdistance[1], canvas, "blue", "three")
 	#close file
 	if f.closed == "False":
 	    f.close()
@@ -65,11 +66,11 @@ def main():
 	emitter2 = drawCircleWithCentrePoint(200, 400, 132, w, "green", "two")
 	emitter3 = drawCircleWithCentrePoint(200, 200, 150, w, "blue", "three")
 
-	readLogFile("/Users/baolongngo/Documents/UoP/FinalYear/Project", "logs.txt", w)
-
-
+	w.after(1000, readLogFile, "/Users/baolongngo/Documents/UoP/FinalYear/Project", "logs.txt", w)
 	mainloop()
 
+
+	readLogFile("/Users/baolongngo/Documents/UoP/FinalYear/Project", "logs.txt", w)
 main()
 
 
